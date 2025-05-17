@@ -21,8 +21,9 @@ if ($result->num_rows === 0) {
 // 로그인 처리
 $user = $result->fetch_assoc();
 if (password_verify($password, $user['password'])) {
-    $_SESSION['userid'] = $user['userid'];
-    $_SESSION['name'] = $user['name'];
+    $_SESSION['user_id'] = $user['id'];        // 🔹 숫자형 DB ID (예: 3)
+    $_SESSION['userid']  = $user['userid'];    // 🔸 문자열 로그인 ID (예: abc101)
+    $_SESSION['name']    = $user['name']; 
     header("Location: list.php"); // 로그인 성공 시 게시판으로 이동
     exit;
 } else {

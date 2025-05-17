@@ -8,11 +8,12 @@ if (!isset($_SESSION["userid"])) {
     exit();
 }
 
-// 게시글 목록 불러오기
+// 게시글 목록 불러오기 (id 내림차순)
 $sql = "SELECT posts.id, title, name, created_at 
         FROM posts 
-        JOIN users ON posts.userid = users.userid 
-        ORDER BY posts.id DESC";
+        JOIN users ON posts.user_id = users.id 
+        ORDER BY posts.created_at DESC";
+
 $result = $conn->query($sql);
 ?>
 
@@ -81,18 +82,20 @@ $result = $conn->query($sql);
             <th>Name</th>
             <th>Date</th>
         </tr>
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?= $row["id"] ?></td>
-                <td>
-                    <a class="title-link" href="view.php?id=<?= $row["id"] ?>">
-                        <?= htmlspecialchars($row["title"]) ?>
-                    </a>
-                </td>
-                <td><?= htmlspecialchars($row["name"]) ?></td>
-                <td><?= date("d/m/Y", strtotime($row["created_at"])) ?></td>
-            </tr>
-        <?php endwhile; ?>
+        <?php $no = $result->num_rows; ?>
+<?php while ($row = $result->fetch_assoc()): ?>
+    <tr>
+        <td><?= $no-- ?></td>
+        <td>
+            <a class="title-link" href="view.php?id=<?= $row["id"] ?>">
+                <?= htmlspecialchars($row["title"]) ?>
+            </a>
+        </td>
+        <td><?= htmlspecialchars($row["name"]) ?></td>
+        <td><?= date("d/m/Y", strtotime($row["created_at"])) ?></td>
+    </tr>
+<?php endwhile; ?>
+
     </table>
 
     <div style="text-align: right;">
