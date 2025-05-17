@@ -3,7 +3,7 @@ session_start();
 include "db.php";
 
 // 로그인한 사용자만 접근 가능
-if (!isset($_SESSION["user_id"])) {
+if (!isset($_SESSION["userid"])) {
     header("Location: index.php");
     exit();
 }
@@ -11,28 +11,95 @@ if (!isset($_SESSION["user_id"])) {
 // 게시글 목록 불러오기
 $sql = "SELECT posts.id, title, name, created_at 
         FROM posts 
-        JOIN users ON posts.user_id = users.id 
+        JOIN users ON posts.userid = users.userid 
         ORDER BY posts.id DESC";
 $result = $conn->query($sql);
 ?>
 
-<h2>📋 게시판 글 목록</h2>
-<p>안녕하세요, <?= $_SESSION["user_name"] ?>님!</p>
-<a href="write.php">[글쓰기]</a> | <a href="logout.php">[로그아웃]</a>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletin Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .board-container {
+            width: 600px;
+            border: 1px solid #000;
+            padding: 20px;
+            margin: 50px auto;
+        }
+        h2 {
+            margin-top: 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: none;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            font-weight: bold;
+        }
+        a.button {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-top: 20px;
+            margin-right: 5px;
+            background-color: #ddd;
+            border: 1px solid #aaa;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+        .title-link {
+            text-decoration: none;
+            color: black;
+        }
+        .title-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>No</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>작성일</th>
-    </tr>
-    <?php while ($row = $result->fetch_assoc()): ?>
+<div class="board-container">
+    <h2>Bulletin Board > List View</h2>
+
+    <table>
         <tr>
-            <td><?= $row["id"] ?></td>
-            <td><a href="view.php?id=<?= $row["id"] ?>"><?= htmlspecialchars($row["title"]) ?></a></td>
-            <td><?= $row["name"] ?></td>
-            <td><?= $row["created_at"] ?></td>
+            <th>No.</th>
+            <th>Title</th>
+            <th>Name</th>
+            <th>Date</th>
         </tr>
-    <?php endwhile; ?>
-</table>
+        <?php while ($row = $result->fetch_assoc()): ?>
+            <tr>
+                <td><?= $row["id"] ?></td>
+                <td>
+                    <a class="title-link" href="view.php?id=<?= $row["id"] ?>">
+                        <?= htmlspecialchars($row["title"]) ?>
+                    </a>
+                </td>
+                <td><?= htmlspecialchars($row["name"]) ?></td>
+                <td><?= date("d/m/Y", strtotime($row["created_at"])) ?></td>
+            </tr>
+        <?php endwhile; ?>
+    </table>
+
+    <div style="text-align: right;">
+        <a class="button" href="write.php">Write</a>
+        <a class="button" href="logout.php">Logout</a>
+    </div>
+</div>
+
+</body>
+</html>
