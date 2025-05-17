@@ -23,7 +23,7 @@ $user = $result->fetch_assoc();
 if (password_verify($password, $user['password'])) {
     $_SESSION['user_id'] = $user['user_id'];
     $_SESSION['name'] = $user['name'];
-    header("Location: board.php"); // 로그인 성공 시 게시판으로 이동
+    header("Location: list.php"); // 로그인 성공 시 게시판으로 이동
     exit;
 } else {
     echo "<script>alert('비밀번호가 틀렸습니다.');history.back();</script>";
