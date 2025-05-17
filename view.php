@@ -91,11 +91,37 @@ $post = $result->fetch_assoc();
     <div class="button-group">
         <a href="list.php">List</a>
         <a href="edit.php?id=<?= $post['id'] ?>">Edit</a>
-        <a href="delete.php?id=<?= $post['id'] ?>" onclick="return confirm('정말 삭제할까요?');">Delete</a>
+        <a href="#" onclick="deletePost(<?= $post['id'] ?>); return false;">Delete</a>
         <a href="write.php">Write</a>
         <a href="logout.php">Logout</a>
     </div>
 </div>
+
+<script>
+function deletePost(id) {
+    if (!confirm("정말 삭제할까요?")) return;
+
+    fetch("delete_post.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "id=" + encodeURIComponent(id)
+    })
+    .then(res => res.text())
+    .then(data => {
+        if (data.trim() === "success") {
+            alert("삭제되었습니다.");
+            location.href = "list.php";
+        } else {
+            alert("❌ " + data);
+        }
+    })
+    .catch(err => {
+        alert("오류 발생: " + err);
+    });
+}
+</script>
 
 </body>
 </html>

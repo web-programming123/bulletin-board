@@ -1,29 +1,8 @@
 <?php
 session_start();
-include "db.php";
-
-// 로그인 여부 확인
 if (!isset($_SESSION["user_id"])) {
     header("Location: index.php");
     exit();
-}
-
-// 글 작성 처리
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $title = $_POST["title"];
-    $content = $_POST["content"];
-    $user_id = $_SESSION["user_id"];
-
-    $sql = "INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssi", $title, $content, $user_id);
-
-    if ($stmt->execute()) {
-        header("Location: list.php");
-        exit();
-    } else {
-        echo "글 저장 실패: " . $conn->error;
-    }
 }
 ?>
 
@@ -83,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div class="container">
     <h2>Bulletin Board > Writing</h2>
-    <form method="post" onsubmit="return validateForm();">
+    <form id="writeForm">
         <label>Title</label>
         <input type="text" name="title" required><br>
         <label>Content</label>
@@ -98,16 +77,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 <script>
-function validateForm() {
-    const title = document.forms[0]["title"].value.trim();
-    const content = document.forms[0]["content"].value.trim();
+document.getElementById("writeForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const title = form.title.value.trim();
+    const content = form.content.value.trim();
 
     if (!title || !content) {
         alert("제목과 내용을 모두 입력해주세요.");
-        return false;
+        return;
     }
-    return true;
-}
+
+    const formData = new URLSearchParams();
+    formData.append("title", title);
+    formData.append("content", content);
+
+    fetch("write_post.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: formData.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("게시글이 등록되었습니다.");
+            location.href = "list.php";
+        } else {
+            alert("❌ " + (data.message || "등록 실패"));
+        }
+    })
+    .catch(err => {
+        alert("통신 오류: " + err);
+    });
+});
 </script>
 
 </body>
