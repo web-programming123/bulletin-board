@@ -13,7 +13,6 @@
             border: 1px solid #000;
             padding: 20px;
             margin: 100px auto;
-            box-shadow: 2px 2px 10px #ccc;
         }
         h2 {
             margin-top: 0;
@@ -39,12 +38,6 @@
             font-weight: bold;
             cursor: pointer;
         }
-        a {
-            display: block;
-            margin-top: 10px;
-            text-align: right;
-            font-size: 0.9em;
-        }
     </style>
 </head>
 <body>
@@ -60,10 +53,7 @@
 
         <input type="submit" value="Login">
     </form>
-
-    <a href="signup.php">[회원가입]</a>
 </div>
 
 </body>
 </html>
-
